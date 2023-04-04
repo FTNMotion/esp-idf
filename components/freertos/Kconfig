@@ -465,6 +465,14 @@ menu "FreeRTOS"
                 When enabled, the functions related to snapshots, such as vTaskGetSnapshot or uxTaskGetSnapshotAll, are
                 compiled and linked. Task snapshots are used by Task Watchdog (TWDT), GDB Stub and Core dump.
 
+        config FREERTOS_TASK_NOTIFICATION_ARRAY_ENTRIES
+            int "FreeRTOS task notification array size"
+            range 0 10
+            default 1
+            help
+                FreeRTOS v10.4.0 and above allows each task to have an array of notifications. Each notification is a uint32_t.
+                Note that this setting applies to all tasks including system tasks and so can consume significant memory.
+
     endmenu # Port
 
     # Hidden or compatibility options
