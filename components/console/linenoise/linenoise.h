@@ -46,10 +46,33 @@ extern "C" {
 #include <stdbool.h>
 #include <stddef.h>
 
+extern char *linenoiseEditMore;
+
+/* The linenoiseState structure represents the state during line editing.
+ * We pass this state to functions implementing specific editing
+ * functionalities. */
+typedef struct linenoiseState {
+    char *buf;          /* Edited line buffer. */
+    size_t buflen;      /* Edited line buffer size. */
+    const char *prompt; /* Prompt to display. */
+    size_t plen;        /* Prompt length. */
+    size_t pos;         /* Current cursor position. */
+    size_t oldpos;      /* Previous refresh cursor position. */
+    size_t len;         /* Current edited line length. */
+    size_t cols;        /* Number of columns in terminal. */
+    size_t maxrows;     /* Maximum num of rows used so far (multiline mode) */
+    int history_index;  /* The history index we are currently editing. */
+} linenoiseState;
+
 typedef struct linenoiseCompletions {
   size_t len;
   char **cvec;
 } linenoiseCompletions;
+
+/* Non blocking API. */
+int linenoiseEditStart(linenoiseState *l, const char *prompt);
+char *linenoiseEditFeed(linenoiseState *l, uint32_t *millis);
+void linenoiseEditStop(linenoiseState *l);
 
 typedef void(linenoiseCompletionCallback)(const char *, linenoiseCompletions *);
 typedef char*(linenoiseHintsCallback)(const char *, int *color, int *bold);
@@ -74,7 +97,9 @@ bool linenoiseIsDumbMode(void);
 void linenoisePrintKeyCodes(void);
 void linenoiseAllowEmpty(bool);
 int linenoiseSetMaxLineLen(size_t len);
-
+void linenoiseSanitize(char* src);
+int linenoiseSocketProbe(int sock);
+uint32_t linenoiseGetMillis(void);
 #ifdef __cplusplus
 }
 #endif
